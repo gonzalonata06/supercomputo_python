@@ -6,32 +6,34 @@ class WeekDayError(BaseException):
 
 
 class Weeker:
-    lista = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     def __init__(self,day):
+        lista = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         if day in lista:
-            elf.__day = day   
+            self.__day = day   
         else:
             raise WeekDayError
     def add_days(self,n):
+        lista = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         n_index = lista.index(self.__day) + n % len(lista)
         if n_index > len(lista) - 1:
             n_index -= len(lista) - 1
             self.__day = lista[n_index] 
         else:
 
-        self.__day = lista[lista.index(self.__day) + n % len(lista)]    
+            self.__day = lista[lista.index(self.__day) + n % len(lista)]    
         
 
-    def substract_days(self,n):
+    def subtract_days(self,n):
+        lista = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         n_index = lista.index(self.__day) - n % len(lista)
-        if n_index < 0
-            n_index += len(lista) - 1
+        if n_index < 0:
+            n_index += len(lista)
             self.__day = lista[n_index]
         else:
             self.__day = lista[lista.index(self.__day) - n % len(lista)] 
 
     def __str__(self):
-        return f'{self.day}'
+        return f'{self.__day}'
     
 try:
     weekday = Weeker('Mon')
