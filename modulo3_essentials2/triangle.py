@@ -18,9 +18,8 @@ class Point:
     def distance_from_point(self,point):
         return hypot(self.x-point.x,self.y-point.y)
 
-class Triangle(Point):
+class Triangle:
     def __init__(self,point1,point2,point3):
-        Point.__init__(self)
         self.__lista = [point1, point2, point3]
 
     def perimeter(self):
