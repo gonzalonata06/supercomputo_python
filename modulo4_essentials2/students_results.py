@@ -22,7 +22,7 @@ try:
         name = ''
         l_name = ''
         counter = 0
-        score = 0
+        score = ''
         for char in line:
             if char == ' ':
                 counter += 1
@@ -30,18 +30,17 @@ try:
                 name += char
             elif counter == 1:
                 l_name += char
-            elif counter == 2 and char.isdigit() and:
-                score = float(char)
+            elif counter == 2 and (char.isdigit() or char == '.'):
+                score += char
                 print(score)
-        #if [name,l_name] in lista:
-        #    lista[lista.index([name,l_name]) + 1] += score
-        #else:
-        lista.append([name,l_name])
-        
-        lista.append(score)
-
+                
+        if [name,l_name] in lista:
+            (lista[lista.index([name,l_name]) + 1]) += float(score)
+        else:
+            lista.append([name,l_name])    
+            lista.append(float(score))
         line = file.readline()
-    
+        
     file.close()
     
     print(lista)
