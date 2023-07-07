@@ -6,40 +6,15 @@ class StudentsDataException(Exception):
 
 
 class BadLine(StudentsDataException):
-    def __init__(self,line_number,line_string):
-        super().__init__(self,line_number, line_string)
-        self.line_number = line_number
-        self.line_string = line_string
-    
+    # Write your code here.
+    pass
 
 class FileEmpty(StudentsDataException):
-    def __init__self(self):
-        super().__init__(self)
-
-    
+    # Write your code here.
+    pass
 name = input("Introduce the file's name  ")
-line_number = 1
 
 try:
-    file = open(name,'rt')
-    lines = file.readlines()
-    file.close
-    if len(lines) == 0:
-        raise FileEmpty()
-    #file = open(name,'rt')
-
-    line_1 = lines[line_number - 1]
- 
-    columns = line_1.split()
-    
-    if len(columns) != 3:
-        raise BadLine(counter, line_1)
-
-    try:
-        points = float(columns[2])
-    except ValueError:
-        raise BadLine(counter,line_1)
-
     file = open(name,'rt')
     line = file.readline()
     lista = []
@@ -70,12 +45,8 @@ try:
     for i in range(0,len(lista),2):
         print(lista[i][0],lista[i][1],lista[i+1])
     
-      
+       
 
 except IOError as e:
     print("I/O error occurred: ", strerr(e.errno))
-except BadLine as e:
-    print("Bad line #" + str(e.line_number) + "with file:" + e.line_string)
-except FileEmpty:
-    print("Source file empty")
 

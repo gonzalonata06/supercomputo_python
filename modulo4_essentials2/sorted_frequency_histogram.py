@@ -20,7 +20,7 @@ try:
     
     file_out = open(name+".hist", "wt")
     histogram = dict(sorted(histogram.items(), key=lambda x:x[1], reverse=True))
-    print(histogram)
+    #print(histogram)
     for key in histogram.keys():
         s = key + '->' + str(histogram[key]) + '\n'
         for char in s:
