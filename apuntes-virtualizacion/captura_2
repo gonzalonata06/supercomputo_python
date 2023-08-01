@@ -1,0 +1,144 @@
+gonzalo@localhost Documents]$ vi virtual_net_prueba.xml
+[gonzalo@localhost Documents]$ sudo virsh net-define virtual_net_prueba.xml 
+[sudo] password for gonzalo: 
+Network demo_network defined from virtual_net_prueba.xml
+
+[gonzalo@localhost Documents]$ cat virtual_net_prueba.xml 
+<network connections="2">
+  <name>demo_network</name>
+  <uuid>640e23b5-ecf0-428f-b697-98c5c021233a</uuid>
+  <forward mode="nat">
+    <nat>
+      <port start="1024" end="65535"/>
+    </nat>
+  </forward>
+  <bridge name="virbr1" stp="on" delay="0"/>
+  <mac address="52:54:00:55:f2:0c"/>
+  <domain name="demo_network"/>
+  <ip address="192.168.100.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.100.128" end="192.168.100.254"/>
+    </dhcp>
+  </ip>
+</network>
+
+[gonzalo@localhost Documents]$ vi virtual_net_prueba.xml
+[gonzalo@localhost Documents]$ sudo virsh net-define virtual_net_prueba.xml 
+error: Failed to define network from virtual_net_prueba.xml
+error: internal error: bridge name 'virbr1' already in use.
+
+[gonzalo@localhost Documents]$ vi virtual_net_prueba.xml
+[gonzalo@localhost Documents]$ sudo virsh net-define virtual_net_prueba.xml 
+error: Failed to define network from virtual_net_prueba.xml
+error: operation failed: network 'demo_network' is already defined with uuid 640e23b5-ecf0-428f-b697-98c5c021233a
+
+[gonzalo@localhost Documents]$ vi virtual_net_prueba.xml
+[gonzalo@localhost Documents]$ virt-install      --connect qemu:///system      --name demo2      --ram 500       --disk path=/var/lib/libvirt/images/demo2.img,size=8  --network bridge=virbr1           --graphics vnc   --cdrom /home/gonzalo/Downloads/Rocky-9-Workstation-x86_64-latest.iso
+WARNING  Requested memory 500 MiB is less than the recommended 1536 MiB for OS rocky9
+WARNING  Unable to connect to graphical console: virt-viewer not installed. Please install the 'virt-viewer' package.
+WARNING  No console to launch for the guest, defaulting to --wait -1
+
+Starting install...
+Allocating 'demo2.img'                                                                                                  | 8.0 GB  00:00:01     
+Creating domain...                                                                                                      |         00:00:00     
+
+Domain is still running. Installation may be in progress.
+Waiting for the installation to complete.
+^Z
+[1]+  Stopped                 virt-install --connect qemu:///system --name demo2 --ram 500 --disk path=/var/lib/libvirt/images/demo2.img,size=8 --network bridge=virbr1 --graphics vnc --cdrom /home/gonzalo/Downloads/Rocky-9-Workstation-x86_64-latest.iso
+[gonzalo@localhost Documents]$ virt-install      --connect qemu:///system      --name demo2      --ram 2048       --disk path=/var/lib/libvirt/images/demo2.img,size=8  --network bridge=virbr1           --graphics vnc   --cdrom /home/gonzalo/Downloads/Rocky-9-Workstation-x86_64-latest.iso
+WARNING  Unable to connect to graphical console: virt-viewer not installed. Please install the 'virt-viewer' package.
+WARNING  No console to launch for the guest, defaulting to --wait -1
+
+Starting install...
+Creating domain...                                                                                                      |         00:00:00     
+
+Domain is still running. Installation may be in progress.
+Waiting for the installation to complete.
+Domain has shutdown. Continuing.
+Domain creation completed.
+User stopped the VM. Not rebooting.
+[gonzalo@localhost Documents]$ virt-install      --connect qemu:///system      --name demo2      --ram 2048       --disk path=/var/lib/libvirt/images/demo2.img,size=20000  --network bridge=virbr1  --vcpus 2          --graphics vnc   --cdrom /home/gonzalo/Downloads/Rocky-9-Workstation-x86_64-latest.iso
+WARNING  Unable to connect to graphical console: virt-viewer not installed. Please install the 'virt-viewer' package.
+WARNING  No console to launch for the guest, defaulting to --wait -1
+
+Starting install...
+Creating domain...                                                                                                                                      |         00:00:00     
+
+Domain is still running. Installation may be in progress.
+Waiting for the installation to complete.
+
+[gonzalo@localhost Documents]$ sudo ss -tulpn
+[sudo] password for gonzalo: 
+Sorry, try again.
+[sudo] password for gonzalo: 
+Netid   State    Recv-Q   Send-Q      Local Address:Port       Peer Address:Port   Process                                                     
+udp     UNCONN   0        0                 0.0.0.0:5353            0.0.0.0:*       users:(("avahi-daemon",pid=846,fd=12))                     
+udp     UNCONN   0        0                 0.0.0.0:55488           0.0.0.0:*       users:(("firefox",pid=3142,fd=166))                        
+udp     UNCONN   0        0                 0.0.0.0:40420           0.0.0.0:*       users:(("avahi-daemon",pid=846,fd=14))                     
+udp     UNCONN   0        0           192.168.100.1:53              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=5))                          
+udp     UNCONN   0        0          0.0.0.0%virbr1:67              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=3))                          
+udp     UNCONN   0        0                 0.0.0.0:111             0.0.0.0:*       users:(("rpcbind",pid=818,fd=5),("systemd",pid=1,fd=35))   
+udp     UNCONN   0        0               127.0.0.1:323             0.0.0.0:*       users:(("chronyd",pid=864,fd=5))                           
+udp     UNCONN   0        0                 0.0.0.0:42949           0.0.0.0:*       users:(("firefox",pid=3142,fd=117))                        
+udp     UNCONN   0        0                    [::]:5353               [::]:*       users:(("avahi-daemon",pid=846,fd=13))                     
+udp     UNCONN   0        0                    [::]:56128              [::]:*       users:(("avahi-daemon",pid=846,fd=15))                     
+udp     UNCONN   0        0                    [::]:111                [::]:*       users:(("rpcbind",pid=818,fd=7),("systemd",pid=1,fd=37))   
+udp     UNCONN   0        0                   [::1]:323                [::]:*       users:(("chronyd",pid=864,fd=6))                           
+tcp     LISTEN   0        128             127.0.0.1:631             0.0.0.0:*       users:(("cupsd",pid=1056,fd=7))                            
+tcp     LISTEN   0        32          192.168.100.1:53              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=6))                          
+tcp     LISTEN   0        1               127.0.0.1:5901            0.0.0.0:*       users:(("qemu-kvm",pid=6067,fd=26))                        
+tcp     LISTEN   0        1               127.0.0.1:5900            0.0.0.0:*       users:(("qemu-kvm",pid=7260,fd=25))                        
+tcp     LISTEN   0        1               127.0.0.1:5902            0.0.0.0:*       users:(("qemu-kvm",pid=10905,fd=26))                       
+tcp     LISTEN   0        128               0.0.0.0:22              0.0.0.0:*       users:(("sshd",pid=1064,fd=3))                             
+tcp     LISTEN   0        4096              0.0.0.0:111             0.0.0.0:*       users:(("rpcbind",pid=818,fd=4),("systemd",pid=1,fd=34))   
+tcp     LISTEN   0        128                 [::1]:631                [::]:*       users:(("cupsd",pid=1056,fd=6))                            
+tcp     LISTEN   0        128                  [::]:22                 [::]:*       users:(("sshd",pid=1064,fd=4))                             
+tcp     LISTEN   0        4096                 [::]:111                [::]:*       users:(("rpcbind",pid=818,fd=6),("systemd",pid=1,fd=36))   
+[gonzalo@localhost Documents]$ sudo ss -tulpn
+[sudo] password for gonzalo: 
+Netid   State    Recv-Q   Send-Q      Local Address:Port       Peer Address:Port   Process                                                     
+udp     UNCONN   0        0                 0.0.0.0:51978           0.0.0.0:*       users:(("firefox",pid=3142,fd=148))                        
+udp     UNCONN   0        0                 0.0.0.0:44213           0.0.0.0:*       users:(("firefox",pid=3142,fd=146))                        
+udp     UNCONN   0        0                 0.0.0.0:45403           0.0.0.0:*       users:(("firefox",pid=3142,fd=188))                        
+udp     UNCONN   0        0                 0.0.0.0:5353            0.0.0.0:*       users:(("avahi-daemon",pid=846,fd=12))                     
+udp     UNCONN   0        0                 0.0.0.0:38877           0.0.0.0:*       users:(("firefox",pid=3142,fd=119))                        
+udp     UNCONN   0        0                 0.0.0.0:55488           0.0.0.0:*       users:(("firefox",pid=3142,fd=166))                        
+udp     UNCONN   0        0                 0.0.0.0:56430           0.0.0.0:*       users:(("firefox",pid=3142,fd=216))                        
+udp     UNCONN   0        0                 0.0.0.0:40420           0.0.0.0:*       users:(("avahi-daemon",pid=846,fd=14))                     
+udp     UNCONN   0        0           192.168.100.1:53              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=5))                          
+udp     UNCONN   0        0          0.0.0.0%virbr1:67              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=3))                          
+udp     UNCONN   0        0                 0.0.0.0:111             0.0.0.0:*       users:(("rpcbind",pid=818,fd=5),("systemd",pid=1,fd=35))   
+udp     UNCONN   0        0               127.0.0.1:323             0.0.0.0:*       users:(("chronyd",pid=864,fd=5))                           
+udp     UNCONN   0        0                 0.0.0.0:41845           0.0.0.0:*       users:(("firefox",pid=3142,fd=167))                        
+udp     UNCONN   0        0                 0.0.0.0:42067           0.0.0.0:*       users:(("firefox",pid=3142,fd=205))                        
+udp     UNCONN   0        0                 0.0.0.0:51115           0.0.0.0:*       users:(("firefox",pid=3142,fd=157))                        
+udp     UNCONN   0        0                    [::]:5353               [::]:*       users:(("avahi-daemon",pid=846,fd=13))                     
+udp     UNCONN   0        0                    [::]:56128              [::]:*       users:(("avahi-daemon",pid=846,fd=15))                     
+udp     UNCONN   0        0                    [::]:111                [::]:*       users:(("rpcbind",pid=818,fd=7),("systemd",pid=1,fd=37))   
+udp     UNCONN   0        0                   [::1]:323                [::]:*       users:(("chronyd",pid=864,fd=6))                           
+tcp     LISTEN   0        128             127.0.0.1:631             0.0.0.0:*       users:(("cupsd",pid=1056,fd=7))                            
+tcp     LISTEN   0        32          192.168.100.1:53              0.0.0.0:*       users:(("dnsmasq",pid=5804,fd=6))                          
+tcp     LISTEN   0        1               127.0.0.1:5901            0.0.0.0:*       users:(("qemu-kvm",pid=6067,fd=26))                        
+tcp     LISTEN   0        1               127.0.0.1:5900            0.0.0.0:*       users:(("qemu-kvm",pid=7260,fd=25))                        
+tcp     LISTEN   0        1               127.0.0.1:5902            0.0.0.0:*       users:(("qemu-kvm",pid=12091,fd=26))                       
+tcp     LISTEN   0        128               0.0.0.0:22              0.0.0.0:*       users:(("sshd",pid=1064,fd=3))                             
+tcp     LISTEN   0        4096              0.0.0.0:111             0.0.0.0:*       users:(("rpcbind",pid=818,fd=4),("systemd",pid=1,fd=34))   
+tcp     LISTEN   0        128                 [::1]:631                [::]:*       users:(("cupsd",pid=1056,fd=6))                            
+tcp     LISTEN   0        128                  [::]:22                 [::]:*       users:(("sshd",pid=1064,fd=4))                             
+tcp     LISTEN   0        4096                 [::]:111                [::]:*       users:(("rpcbind",pid=818,fd=6),("systemd",pid=1,fd=36))   
+[gonzalo@localhost Documents]$ 
+
+
+https://fp.josedomingo.org/hlc2122/u01/introduccion.html
+
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/virtualization_getting_started_guide/sec-virtualization_getting_started-products-libvirt-libvirt-tools
+
+https://access.redhat.com/documentation/es-es/red_hat_enterprise_linux/8/html/configuring_and_managing_virtualization/assembly_creating-virtual-machines_virt-getting-started
+
+https://onthedock.github.io/post/200627-creacion-de-vm-en-kvm-con-virsh/
+
+https://linux.die.net/man/1/virt-install
+
+https://computingforgeeks.com/how-to-create-and-configure-bridge-networking-for-kvm-in-linux/
+
