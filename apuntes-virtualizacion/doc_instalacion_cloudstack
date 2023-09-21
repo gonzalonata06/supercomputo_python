@@ -161,6 +161,8 @@ pip install mysql-connector-python
 
 sudo dnf install cloudstack-management
 
+#los puertos 8080, 8250, 8443 y 9090 se deben encontrar abiertos y no firewalled por el server management, y no utilizados por algún otro proceso en este host
+
 #22. Verificamos que se esté utilizando la versión 11 de java
 
 alternatives --config java
