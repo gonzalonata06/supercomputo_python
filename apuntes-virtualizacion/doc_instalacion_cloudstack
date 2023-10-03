@@ -1,5 +1,5 @@
-#Esta guía permite la instalación de apache cloud stack en la distribución 
-Rocky-9.2-x86_64-dvd.iso y está basada en http://docs.cloudstack.apache.org/en/latest/quickinstallationguide/qig.html
+#Esta guía permite la instalación de apache cloud stack en la distribución Rocky-9.2-x86_64-dvd.iso y está basada en http://docs.cloudstack.apache.org/en/latest/quickinstallationguide/qig.html usando la version 4.18.0.0
+
 
 #Es muy recomendable llevar a cabo la instalación como administrador dado que los archivos de configuración que son modificados contienen protección contra escritura
 

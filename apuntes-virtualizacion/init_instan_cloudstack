@@ -1,3 +1,5 @@
+#Esta guía está pensada para la versión 4.18.0.0 de apache cloudstack
+
 #1. Iniciar sesion con las credenciales username: admin password: password
 #Yo intente usar 4GiB de ram en la virtual y se me congelaba bastante, recomiendo usar 6GiB
 
