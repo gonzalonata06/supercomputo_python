@@ -1,0 +1,105 @@
+#1. Iniciar sesion con las credenciales username: admin password: password
+#Yo intente usar 4GiB de ram en la virtual y se me congelaba bastante, recomiendo usar 6GiB
+
+#2. Verifica que el demonio de cloudstack-agente se encuentra correctamente operando, si no es el caso reinicia la virtual
+systemctl status cloudstack-agent
+
+#3. Dirigete a la pestaña de infraestructure  y busca la parte de zone, ahí se agregará la primera zona y todo lo necesario para correr la primera instancia, click en add zone
+
+#4. Los siguientes pasos son todos de configuración 
+
+### Elige la opción de core
+
+### Elige basic para core zone type 
+
+### En nombre de la zona puedes poner zone1 o un nombre ilustrativo e útil
+
+# En IPv4 DNS1: 8.8.8.8
+
+# En IPv4 DNS2: 8.8.4.4
+
+# En Internal IPv4 DNS1: 8.8.8.8
+
+# En Internal IPv4 DNS2: 8.8.4.4
+
+#Hypervisor: KVM
+
+#Network offerin: Offering for Shared Security group enabled networks
+
+#El resto de esa pestaña como está
+
+### La parte de physical network la dejamos tal y  como aparece
+
+### Para el nombre de pod puedes poner pod1 o cualquier otro
+
+# En Reserved system gateway: $MYIPADRESS.1 debe ser tú IP pero el último número debe ser 1
+
+# Reserved system netmask: 255.255.255.1
+
+# Start reserverd system IP: $MYIPADRESS.21 debe ser tu IP cambiando el último número por 21
+
+# Start reserverd system IP: $MYIPADRESS.30 debe ser tu IP cambiando el último número por 30
+
+### En guest gateway: $MYIPADRESS.1 lo mismo que en reserved system gateway
+
+# Guest netmask: 255.255.255.0
+
+# Guest start IP: $MYIPADRESS.100, si tu último número de IP es menor a 100 aplica este valor y el siguiente
+
+# Guest end IP: $MYIPADRESS.200
+
+### Pon un nombre al cluster, por ejemplo Cluster1
+
+### En host name: $MYIPADRESS
+
+# username: root
+
+#autentication method: password
+
+#password: aquí va la contraseña de root de tu computadora 
+
+### En nombre de primary storage puedes poner: Primary1 o algo significativo
+
+#scope: cluster
+
+#protocol: nfs
+
+#server: $MYIPADRESS
+
+#path: /export/primary
+
+#provider: DefaultPrimary
+
+### Para secondary storage
+
+#provider: NFS
+
+#name: Secondary3
+
+#server: $MYIPADRESS
+
+#path: /export/secondary
+
+#En caso de problema al crear el host, haz click en fix errors verifica que los valores sean correctos y si son correctos intenta nuevamente el lanzamiento de la zona con esa configuración. En caso de que indice que el host ya existe eliminalo desde otra ventana de cloudstack, yendo a infraestructure y posteriormente a Hosts.
+
+### Ya que se inició la zona habilitala con el boton enable zone.
+
+### Para verificar que todo sea correcto dirigete en la parte de infraestructure y después a system VMs
+
+#Aquí debe existir dos procesos que se debe inciar.
+#Algo como s-1-VM y v-2-VM
+#Si no existen algo fallo en la creación y lanzamiento de la zona,puedes intentar deshabilitarla y volver a habilitarla para ver si se inician estos procesos. En caso de que no se tendrá que rehacer toda esta guía.
+
+### Una vez iniciados, dirigete a la parte de storage, y volumes. Ahí crea un volumen en la zona que desplegaste con al menos 5GB de espacio.
+
+### Para crear la instancia, vamos al a seccion de storage y seleccionamos instances
+
+# Para crear la instancia seleccionamos la zona, pod, cluster, y host que creamos.
+
+# Seleccionamos un template que tengamos cargado
+
+#Escogemos small instance en compute offering, y small en data disk
+
+#Para security groups seleccionamos el default 
+
+#Finalmente sólo la lanzamos

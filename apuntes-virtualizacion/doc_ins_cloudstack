@@ -1,0 +1,225 @@
+#Esta guía permite la instalación de apache cloud stack en la distribución 
+Rocky-9.2-x86_64-dvd.iso y está basada en http://docs.cloudstack.apache.org/en/latest/quickinstallationguide/qig.html
+
+#Es muy recomendable llevar a cabo la instalación como administrador dado que los archivos de configuración que son modificados contienen protección contra escritura
+
+#Se contrastará la documentación oficial de apache cloud stack para centos7 par la instalacion rápida con la que se  adapta para Rocky 9.2
+
+#1 . Upgrade del sistema
+sudo dnf -y upgrade 
+
+#2. Instalacion de bridge-utils y net-tools 
+sudo dnf install epel-release
+sudo dnf install net-tools bridge-utils
+
+#3. Configuracion de red
+#Se debe crear el archivo de configuración /etc/sysconfig/network-scripts/ifcfg-cloudbr0 con el siguiente contenido
+
+DEVICE=cloudbr0
+TYPE=Bridge
+ONBOOT=yes
+BOOTPROTO=static
+IPV6INIT=no
+IPV6_AUTOCONF=no
+DELAY=5
+IPADDR=$MYIPADRESS 
+GATEWAY=$MYIPADRESS aquí se cambia el último número de la IP por un 1
+NETMASK=255.255.255.0
+DNS1=8.8.8.8
+DNS2=8.8.4.4
+STP=yes
+USERCTL=no
+NM_CONTROLLED=no
+
+
+#4. Se crea otro archivo de configuración en /etc/sysconfig/network-scripts/ifcfg-enp1s0 (En este caso se está utilizando enp1s0 pero puede variar, el nombre se encuentra al utilizar $(ip a) y corresponde al nombre en donde se encuentra la ip). El contenido de este archivo es el siguiente
+
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+NAME=enp1s0
+DEVICE=enp1s0
+ONBOOT=yes
+BRIDGE=cloudbr0
+
+#5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.	
+
+systemctl disable NetworkManager; systemctl stop NetworkManager
+
+#6. Instalamos el demonio network-scripts
+dnf install network-scripts --enablerepo=devel
+
+#7. Activamos el demonio recien instalado y reiniciamos para cargar todos los cambios de configuracion
+ 
+systemctl enable network; reboot
+
+#8. Realizamos un ping para corroborar que haya conexión a internet
+
+ping 8.8.8.8
+
+#Si es exitoso significa que la configuración de red ha sido exitosa, igualmente al momento de realizar
+
+ip a
+
+#nos debemos percatar del cambio hecho por cloudbr0
+
+#9. Configuracion correcta del hostname, para esto es necesario modificar el archivo /etc/host y añadir en una nueva linea
+
+#$MYIPADRESS srvr1.cloud.priv
+
+#10. Se reinicia el demonio network
+
+systemctl restart network
+
+#se verifica el estado de hostname
+
+hostanme --fdqn
+
+#11. Configuramos SELinux, ejecutando en el shell
+
+sudo setenforce 0
+
+#cambiamos la configuracion del archivo /etc/selinux/config para que sea igual que lo siguiente:
+
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+# enforcing - SELinux security policy is enforced.
+# permissive - SELinux prints warnings instead of enforcing.
+# disabled - No SELinux policy is loaded.
+SELINUX=permissive
+# SELINUXTYPE= can take one of these two values:
+# targeted - Targeted processes are protected,
+# mls - Multi Level Security protection.
+SELINUXTYPE=targeted
+
+#Con esas dos unicas lineas no comentadas.
+
+#12. Configuración del repositorio de cloudstack
+#Es necesario crear el archivo /etc/yum.repos.d/cloudstack.repo con el siguiente contenido
+
+[cloudstack]
+name=cloudstack
+baseurl=http://download.cloudstack.org/centos/$releasever/4.18/
+enabled=1
+gpgcheck=0
+
+#13. Se instala nfs-utils
+
+sudo dnf install nfs-utils
+
+#Se debe agregar al archivo /etc/exports las siguientes lineas (en caso de no existir el archivo de configuración serán las únicas líneas en el 
+
+/export/secondary *(rw,async,no_root_squash,no_subtree_check)
+/export/primary *(rw,async,no_root_squash,no_subtree_check)
+
+# Se tienen que crear las siguientes carpetas
+
+sudo mkdir -p /export/primary
+sudo mkdir /export/secondary
+
+#14. Se modifica el archivo /etc/idmapd.conf
+
+#la linea con Domain debe quedar así 
+Domain = cloud.priv
+
+#15. Se desactiva el demonio del firewall
+
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+
+
+#16. Se inicializan otros demonios necesarios
+sudo systemctl enable rpcbind
+sudo systemctl enable nfs-server
+sudo systemctl start rpcbind
+sudo systemctl start nfs-server
+
+#17. Instalación de wget y obtención del repositorio de mysql
+
+sudo dnf install wget
+sudo wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+sudo rpm -ivh mysql-community-release-el7-5.noarch.rpm
+sudo dnf install mysql-server
+
+#18. Modificar el archivo de configuracion de mysql en /etc/my.cnf añadiendo 
+
+innodb_rollback_on_timeout=1
+innodb_lock_wait_timeout=600
+max_connections=350
+log-bin=mysql-bin
+binlog-format = 'ROW'
+
+#19. Se inicia el demonio de mysql
+
+systemctl enable mysqld
+systemctl start mysqld
+
+#Puedes corroborar que se encuentra ejecutandose usando 
+
+systemctl status mysqld
+
+#20. Para instalar el conector de python con mysql usaremos
+
+pip install mysql-connector-python
+
+#21. Instalacion de cloudstack con el repositorio agregado en el paso 12
+
+sudo dnf install cloudstack-management
+
+#22. Verificamos que se esté utilizando la versión 11 de java
+
+alternatives --config java
+
+#23. Se inicializa la base de datos 
+
+sudo cloudstack-setup-databases cloud:password@localhost --deploy-as=root
+
+#24. Se inicializa el gestor del servidor 
+
+sudo cloudstack-setup-management
+
+#25 Se establece una configuración para cloudstack
+/usr/share/cloudstack-common/scripts/storage/secondary/cloud-install-sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
+
+#26 Para realizar la virtualización es necesario instalar kvm para ello será necesario
+
+sudo dnf install cloudstack-agent
+
+#27. Instalacion de libvirt
+
+sudo dnf install libvirt
+
+#28. Configuracion del archivo /etc/libvirt/qemu.conf, en el archivo se encuentra la siguiente linea que debe
+#ser descomentada
+vnc_listen=0.0.0.0
+
+#De igual forma se debe tener en el archivo /etc/libvirt/libvirtd la siguiente configuracion
+
+listen_tls = 0
+listen_tcp = 1
+tcp_port = "16509"
+auth_tcp = "none"
+mdns_adv = 0
+
+#29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
+sudo systemctl restart libvirtd 
+usdo systemctl status libvirtd
+
+#30. Corroboramos qque kvm se encuentre corriendo con el siguiente comand, debería obtenerse algo como lo de abajo 
+
+lsmod | grep kvm
+
+#kvm_intel              55496  0
+#kvm                   337772  1 kvm_intel
+#kvm_amd # if you are in AMD cpu
+
+
+#31. Es necesario que el puerto 8080 se encuentre escuchando para ejecutar correctamente la interfaz de cloudstack en el navegador, para esto hacemos
+
+ss -tlpn | grep 8080
+
+#Abrimos el navegador y colocamos la direccion
+
+$MYIPADRESS:8080/client
+
+
