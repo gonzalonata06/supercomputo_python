@@ -10,7 +10,7 @@
 dnf upgrade
 #Instalacion de bridge utils y net-tools
 dnf install epel-release
-dnf install bridge utils net-tools
+dnf install bridge-utils net-tools
 #Creacion de archivo de configuracio de red en /etc/sysconfig/network-scripts/ifcfg-cloudbr0
 r_red=/etc/sysconfig/network-scripts/ifcfg-cloudbr0
 #r_red=./prueba_shell
@@ -201,8 +201,8 @@ echo 'vnc_listen = "0.0.0.0"' >> /etc/libvirt/qemu.conf
 
 echo listen_tls = 0 >> /etc/libvirt/libvirtd.conf
 echo listen_tcp = 1 >> /etc/libvirt/libvirtd.conf
-echo tcp_port = "16509" >> /etc/libvirt/libvirtd.conf
-echo auth_tcp = "none" >> /etc/libvirt/libvirtd.conf
+echo 'tcp_port = "16509"' >> /etc/libvirt/libvirtd.conf
+echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
 echo mdns_adv = 0 >> /etc/libvirt/libvirtd.conf
 
 #29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
