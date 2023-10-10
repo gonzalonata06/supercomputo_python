@@ -89,7 +89,7 @@ systemctl restart network
 
 #se verifica el estado de hostname
 
-hostanme --fdqn
+#hostaname --fdqn
 
 #11. Configuramos SELinux, ejecutando en el shell
 
@@ -107,7 +107,7 @@ rm aux1
 r_cloud=/etc/yum.repos.d/cloudstack.repo
 echo [cloudstack] > $r_cloud
 echo name=cloudstack >> $r_cloud
-echo baseurl=http://download.cloudstack.org/centos/$releasever/4.18/ >> $r_cloud
+echo 'baseurl=http://download.cloudstack.org/centos/$releasever/4.18/' >> $r_cloud
 echo enabled=1 >> $r_cloud
 echo gpgcheck=0 >> $r_cloud
 
