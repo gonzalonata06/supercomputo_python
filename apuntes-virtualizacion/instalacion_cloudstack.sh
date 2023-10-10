@@ -158,7 +158,7 @@ echo binlog-format = 'ROW' >> /etc/my.cnf
 #19. Se inicia el demonio de mysql
 
 systemctl enable mysqld
-systemctl start mysqld
+systemctl restart mysqld
 
 #Puedes corroborar que se encuentra ejecutandose usando
 
@@ -195,15 +195,15 @@ dnf install libvirt
 
 #28. Configuracion del archivo /etc/libvirt/qemu.conf, se agrega la siguiente linea
 
-echo vnc_listen=0.0.0.0 >> /etc/libvirt/qemu.conf
+echo 'vnc_listen = "0.0.0.0"' >> /etc/libvirt/qemu.conf
 
-#De igual forma se debe tener en el archivo /etc/libvirt/libvirtd la siguiente configuracion
+#De igual forma se debe tener en el archivo /etc/libvirt/libvirtd.conf la siguiente configuracion
 
-echo listen_tls = 0 >> /etc/libvirt/libvirtd
-echo listen_tcp = 1 >> /etc/libvirt/libvirtd
-echo tcp_port = "16509" >> /etc/libvirt/libvirtd
-echo auth_tcp = "none" >> /etc/libvirt/libvirtd
-echo mdns_adv = 0 >> /etc/libvirt/libvirtd
+echo listen_tls = 0 >> /etc/libvirt/libvirtd.conf
+echo listen_tcp = 1 >> /etc/libvirt/libvirtd.conf
+echo tcp_port = "16509" >> /etc/libvirt/libvirtd.conf
+echo auth_tcp = "none" >> /etc/libvirt/libvirtd.conf
+echo mdns_adv = 0 >> /etc/libvirt/libvirtd.conf
 
 #29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
 systemctl restart libvirtd 
@@ -231,4 +231,4 @@ alternatives --config java
 
 #$MYIPADRESS:8080/client
 
-
+echo Reinicia el equipo para terminar, al encender verifica los demonios cloudstack-management libvirtd mysqld
