@@ -25,7 +25,9 @@ echo DELAY=5 >> $r_red
 
 gateway=""
 
-for  ((i=1;i<4;i++)){
+gateway="$(echo $1 | cut -f1 -d.)"
+
+for  ((i=2;i<4;i++)){
 	gateway="$gateway.$(echo $1 | cut -f$i -d.)"
 }
 	gateway="$gateway.1"
