@@ -200,7 +200,7 @@ mdns_adv = 0
 
 #29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
 sudo systemctl restart libvirtd 
-usdo systemctl status libvirtd
+sudo systemctl status libvirtd
 
 #30. Corroboramos qque kvm se encuentre corriendo con el siguiente comand, debería obtenerse algo como lo de abajo 
 

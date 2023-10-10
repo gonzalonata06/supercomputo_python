@@ -1,17 +1,22 @@
 #Instalacion de apache cloudstack 4.18.0.0 en Rocky-9.2-x86_64-dvd.iso, adaptado de la guia que se encuentra en  http://docs.cloudstack.apache.org/en/latest/quickinstallationguide/qig.html
 
+# Para ejecutar este programa se necesitan dos argumentos
+
+#./instalacion_cloudstack.sh direccion_ip nombre_en_tarjeta_de_red
+
 #!/bin/bash
 
 #Comenzaremos haciendonos administrador para llevar a cabo toda la instalacion
-#sudo su
+sudo su
 #Actualizacion de paquetes
-#dnf upgrade
+dnf upgrade
 #Instalacion de bridge utils y net-tools
-#dnf install epel-release
-#dnf install bridge utils net-tools
+dnf install epel-release
+dnf install bridge utils net-tools
 #Creacion de archivo de configuracio de red en /etc/sysconfig/network-scripts/ifcfg-cloudbr0
-#r_red=/etc/sysconfig/network-scripts/ifcfg-cloudbr0
-r_red=./prueba_shell
+r_red=/etc/sysconfig/network-scripts/ifcfg-cloudbr0
+#r_red=./prueba_shell
+
 echo DEVICE=cloudbr0 > $r_red
 echo TYPE=Bridge >> $r_red
 echo ONBOOT=yes >> $r_red
@@ -37,7 +42,7 @@ echo STP=yes >> $r_red
 echo USERCTL=no >> $r_red
 echo NM_CONTROLLED=no >> $r_red
 
-#Creación de otro archuvo de configuracion de red
+#Creación de otro archivo de configuracion de red
 
 r_red2=/etc/sysconfig/network-scripts/ifcfg-$2
 
@@ -75,6 +80,7 @@ systemctl start network
 #nos debemos percatar del cambio hecho por cloudbr0
 
 
+
 #9. Configuracion correcta del hostname, para esto es necesario modificar el archivo /etc/hosts y añadir en una nueva linea
 
 echo $1 srvr1.cloud.priv >> /etc/hosts
@@ -95,6 +101,7 @@ setenforce 0
 
 cat /etc/selinux/config > aux1
 cat aux1 | sed 's/enforcing/permissive/' > /etc/selinux/config
+rm aux1
 
 #12. Configuración del repositorio de cloudstack
 #Es necesario crear el archivo /etc/yum.repos.d/cloudstack.repo con el siguiente contenido
@@ -117,21 +124,21 @@ mkdir /export/secondary
 
 #14. Se modifica el archivo /etc/idmapd.conf
 
-cat /etc/idmapd.conf > aux2
-cat aux2 | sed 's/#Domain = local.domain.edu/Domain = cloud.priv/' > /etc/idmapd.conf
+#cat /etc/idmapd.conf > aux2
+#cat aux2 | sed 's/#Domain = local.domain.edu/Domain = cloud.priv/' > /etc/idmapd.conf
 
 echo Domain = cloud.priv >> /etc/idmapd.conf
 
 #15. Se desactiva el demonio del firewall
 
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
+systemctl stop firewalld
+systemctl disable firewalld
 
 #16. Se inicializan otros demonios necesarios
-sudo systemctl enable rpcbind
-sudo systemctl enable nfs-server
-sudo systemctl start rpcbind
-sudo systemctl start nfs-server
+systemctl enable rpcbind
+systemctl enable nfs-server
+systemctl start rpcbind
+systemctl start nfs-server
 
 #17. Instalación de wget y obtención del repositorio de mysql
 
@@ -142,14 +149,86 @@ dnf install mysql-server
 
 #18. Modificar el archivo de configuracion de mysql en /etc/my.cnf añadiendo 
 
-innodb_rollback_on_timeout=1
-innodb_lock_wait_timeout=600
-max_connections=350
-log-bin=mysql-bin
-binlog-format = 'ROW'
+echo innodb_rollback_on_timeout=1 >> /etc/my.cnf
+echo innodb_lock_wait_timeout=600 >> /etc/my.cnf
+echo max_connections=350 >> /etc/my.cnf
+echo log-bin=mysql-bin >> /etc/my.cnf
+echo binlog-format = 'ROW' >> /etc/my.cnf
 
+#19. Se inicia el demonio de mysql
 
+systemctl enable mysqld
+systemctl start mysqld
 
+#Puedes corroborar que se encuentra ejecutandose usando
+
+#systemctl status mysqld
+
+#20. Para instalar el conector de python con mysql usaremos
 dnf install python3-pip
+pip install mysql-connector-python
+
+#21. Instalacion de cloudstack con el repositorio agregado en el paso 12
+
+dnf install cloudstack-management
+
+#los puertos 8080, 8250, 8443 y 9090 se deben encontrar abiertos y no firewalled por el server management, y no utilizados por algún otro proceso en este host
+
+#23. Se inicializa la base de datos
+
+cloudstack-setup-databases cloud:password@localhost --deploy-as=root
+
+#24. Se inicializa el gestor del servidor
+
+cloudstack-setup-management
+
+#25 Se establece una configuración para cloudstack
+/usr/share/cloudstack-common/scripts/storage/secondary/cloud-install-sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
+
+#26 Para realizar la virtualización es necesario instalar kvm para ello será necesario
+
+dnf install cloudstack-agent
+
+#27. Instalacion de libvirt
+
+dnf install libvirt
+
+#28. Configuracion del archivo /etc/libvirt/qemu.conf, se agrega la siguiente linea
+
+echo vnc_listen=0.0.0.0 >> /etc/libvirt/qemu.conf
+
+#De igual forma se debe tener en el archivo /etc/libvirt/libvirtd la siguiente configuracion
+
+echo listen_tls = 0 >> /etc/libvirt/libvirtd
+echo listen_tcp = 1 >> /etc/libvirt/libvirtd
+echo tcp_port = "16509" >> /etc/libvirt/libvirtd
+echo auth_tcp = "none" >> /etc/libvirt/libvirtd
+echo mdns_adv = 0 >> /etc/libvirt/libvirtd
+
+#29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
+systemctl restart libvirtd 
+systemctl status libvirtd
+
+#30. Corroboramos qque kvm se encuentre corriendo con el siguiente comand, debería obtenerse algo como lo de abajo 
+
+lsmod | grep kvm
+
+#kvm_intel              55496  0
+#kvm                   337772  1 kvm_intel
+#kvm_amd # if you are in AMD cpu
+
+#31. Es necesario que el puerto 8080 se encuentre escuchando para ejecutar correctamente la interfaz de cloudstack en el navegador, para esto hacemos
+
+ss -tlpn | grep 8080
+
+
+#32. Verificamos que se esté utilizando la versión 11 de java
+
+alternatives --config java
+
+
+#33. Abrimos el navegador y colocamos la direccion
+
+#$MYIPADRESS:8080/client
 
 
