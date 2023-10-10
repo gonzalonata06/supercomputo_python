@@ -6,8 +6,6 @@
 
 #!/bin/bash
 
-#Comenzaremos haciendonos administrador para llevar a cabo toda la instalacion
-sudo su
 #Actualizacion de paquetes
 dnf upgrade
 #Instalacion de bridge utils y net-tools
