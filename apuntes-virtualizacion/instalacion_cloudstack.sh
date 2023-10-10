@@ -2,7 +2,7 @@
 
 # Para ejecutar este programa se necesitan dos argumentos
 
-#./instalacion_cloudstack.sh direccion_ip nombre_en_tarjeta_de_red
+#sudo ./instalacion_cloudstack.sh direccion_ip nombre_en_tarjeta_de_red
 
 #!/bin/bash
 
