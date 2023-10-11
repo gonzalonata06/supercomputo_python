@@ -188,7 +188,7 @@ sudo dnf install libvirt
 
 #28. Configuracion del archivo /etc/libvirt/qemu.conf, en el archivo se encuentra la siguiente linea que debe
 #ser descomentada
-vnc_listen=0.0.0.0
+vnc_listen = "0.0.0.0"
 
 #De igual forma se debe tener en el archivo /etc/libvirt/libvirtd la siguiente configuracion
 
