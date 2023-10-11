@@ -225,10 +225,12 @@ ss -tlpn | grep 8080
 #32. Verificamos que se esté utilizando la versión 11 de java
 
 alternatives --config java
-
+systemctl status cloudstack-management
+systemctl status mysqld
+systemctl status libvirtd
 
 #33. Abrimos el navegador y colocamos la direccion
 
 #$MYIPADRESS:8080/client
 
-echo Reinicia el equipo para terminar, al encender verifica los demonios cloudstack-management libvirtd mysqld
+echo Reinicia el equipo si algo aún no funciona correctamente, al encender verifica los demonios cloudstack-management libvirtd mysqld
