@@ -6,11 +6,48 @@
 
 #!/bin/bash
 
+#Verificar que la ip e interfaz de red existan de verdad
+
+if [ $(ip a l | grep $1 | wc -l) -eq 1 -a $(ip l l | grep $2 | wc -l ) -eq 1 ]
+then
+	echo "IP ingresada válida"
+	
+else
+	echo IP y/o interfaz de red inválida
+	exit 1
+fi
+
+#Verificar que se está instalando en un Rocky 9.2
+
+if [ $(grep -i Rocky.*9  /etc/os-release | wc -l) -ge 1 ]
+then
+	echo Sistema operativo valido
+else
+	echo Sistema operativo incompatible
+	exit 1
+fi
+
+f_instalacion(){
+ ping -c1 8.8.8.8 
+ if [ $? -eq 0 ]
+ then
+	dnf list installed $1 
+	if [ $? -ne 0 ]
+	then
+		dnf -y install $1 
+	fi
+else
+	echo Sin conexion a internet para descargar paquete
+fi
+}
+
+
 #Actualizacion de paquetes
-dnf upgrade
+dnf -y upgrade
 #Instalacion de bridge utils y net-tools
-dnf install epel-release
-dnf install bridge-utils net-tools
+#dnf -y install epel-release
+f_instalacion epel-release
+#dnf -y install bridge-utils net-tools
 #Creacion de archivo de configuracio de red en /etc/sysconfig/network-scripts/ifcfg-cloudbr0
 r_red=/etc/sysconfig/network-scripts/ifcfg-cloudbr0
 #r_red=./prueba_shell
@@ -60,7 +97,7 @@ systemctl disable NetworkManager
 systemctl stop NetworkManager
 
 #6. Instalamos el demonio network-scripts
-dnf install network-scripts --enablerepo=devel
+dnf -y install network-scripts --enablerepo=devel
 
 #7. Activamos el demonio recien instalado y reiniciamos para cargar todos los cambios de configuracion
  
@@ -115,7 +152,7 @@ echo gpgcheck=0 >> $r_cloud
 
 #13. Se instala nfs-utils
 
-dnf install nfs-utils
+dnf -y install nfs-utils
 
 # Se tienen que crear las siguientes carpetas
 
@@ -142,10 +179,10 @@ systemctl start nfs-server
 
 #17. Instalación de wget y obtención del repositorio de mysql
 
-dnf install wget
+dnf -y install wget
 wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 rpm -ivh mysql-community-release-el7-5.noarch.rpm
-dnf install mysql-server
+dnf -y install mysql-server
 
 #18. Modificar el archivo de configuracion de mysql en /etc/my.cnf añadiendo 
 
@@ -165,12 +202,12 @@ systemctl restart mysqld
 #systemctl status mysqld
 
 #20. Para instalar el conector de python con mysql usaremos
-dnf install python3-pip
+dnf -y install python3-pip
 pip install mysql-connector-python
 
 #21. Instalacion de cloudstack con el repositorio agregado en el paso 12
 
-dnf install cloudstack-management
+dnf -y install cloudstack-management
 
 #los puertos 8080, 8250, 8443 y 9090 se deben encontrar abiertos y no firewalled por el server management, y no utilizados por algún otro proceso en este host
 
@@ -187,11 +224,11 @@ cloudstack-setup-management
 
 #26 Para realizar la virtualización es necesario instalar kvm para ello será necesario
 
-dnf install cloudstack-agent
+dnf -y install cloudstack-agent
 
 #27. Instalacion de libvirt
 
-dnf install libvirt
+dnf -y install libvirt
 
 #28. Configuracion del archivo /etc/libvirt/qemu.conf, se agrega la siguiente linea
 
