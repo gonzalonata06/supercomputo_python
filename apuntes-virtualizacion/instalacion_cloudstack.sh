@@ -8,7 +8,7 @@
 
 #Verificar que la ip e interfaz de red existan de verdad
 
-if [ $(ip a l | grep $1 | wc -l) -eq 1 -a $(ip l l | grep $2 | wc -l ) -eq 1 ]
+if [ echo "$(ip a l | grep $1)/" | wc -l  -eq 1 -a echo "$(ip l l | grep $2):" | wc -l ) -eq 1 ]
 then
 	echo "IP ingresada válida"
 	
