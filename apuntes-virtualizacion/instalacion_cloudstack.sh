@@ -8,9 +8,9 @@
 
 #Verificar que la ip e interfaz de red existan de verdad
 
-if [ \($(echo $(ip a l | grep -c "$1/")) = "1"\) -a \($(echo $(ip l l | grep -c "$2:")) = "1"\) ]
+if [ $(echo $(ip a l | grep -c "$1/")) = "1" ] && [ $(echo $(ip l l | grep -c "$2:")) = "1" ]
 then
-	echo "IP ingresada válida"
+	echo "IP e interfaz de red ingresadas válidas"
 	
 else
 	echo IP y/o interfaz de red inválida
