@@ -1,4 +1,4 @@
-#Instalacion de apache cloudstack 4.18.0.0 en Rocky-9.2-x86_64-dvd.iso, adaptado de la guia que se encuentra en  http://docs.cloudstack.apache.org/en/latest/quickinstallationguide/qig.html
+#Instalacion de apache cloudstack 4.18.0.0 en Rocky-9.2-x86_64-dvd.iso, adaptado de la guia que se encuentra en  http://docs.cloudstack.apache.org/en/latest/quickationguide/qig.html
 
 # Para ejecutar este programa se necesitan dos argumentos
 
@@ -28,29 +28,29 @@ else
 fi
 
 f_instalacion(){
- ping -c1 8.8.8.8 
+ ping -c1 8.8.8.8 &
  if [ $? -eq 0 ]
  then
 	dnf list installed $1 
 	if [ $? -ne 0 ]
 	then
-		dnf -y install $1 
+		dnf -y install $1 $2
 	fi
 else
 	echo Sin conexion a internet para descargar paquete
 fi
 }
 
-
 #Actualizacion de paquetes
-dnf -y upgrade
+#dnf -y upgrade
 #Instalacion de bridge utils y net-tools
-#dnf -y install epel-release
+
 f_instalacion epel-release
-#dnf -y install bridge-utils net-tools
+f_instalacion bridge-utils 
+f_instalacion net-tools
+
 #Creacion de archivo de configuracio de red en /etc/sysconfig/network-scripts/ifcfg-cloudbr0
 r_red=/etc/sysconfig/network-scripts/ifcfg-cloudbr0
-#r_red=./prueba_shell
 
 echo DEVICE=cloudbr0 > $r_red
 echo TYPE=Bridge >> $r_red
@@ -97,7 +97,7 @@ systemctl disable NetworkManager
 systemctl stop NetworkManager
 
 #6. Instalamos el demonio network-scripts
-dnf -y install network-scripts --enablerepo=devel
+f_instalacion network-scripts --enablerepo=devel
 
 #7. Activamos el demonio recien instalado y reiniciamos para cargar todos los cambios de configuracion
  
@@ -152,7 +152,7 @@ echo gpgcheck=0 >> $r_cloud
 
 #13. Se instala nfs-utils
 
-dnf -y install nfs-utils
+f_instalacion nfs-utils
 
 # Se tienen que crear las siguientes carpetas
 
@@ -179,10 +179,10 @@ systemctl start nfs-server
 
 #17. Instalación de wget y obtención del repositorio de mysql
 
-dnf -y install wget
+f_instalacion wget
 wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
 rpm -ivh mysql-community-release-el7-5.noarch.rpm
-dnf -y install mysql-server
+f_instalacion mysql-server
 
 #18. Modificar el archivo de configuracion de mysql en /etc/my.cnf añadiendo 
 
@@ -202,12 +202,12 @@ systemctl restart mysqld
 #systemctl status mysqld
 
 #20. Para instalar el conector de python con mysql usaremos
-dnf -y install python3-pip
-pip install mysql-connector-python
+f_instalacion python3-pip
+pip mysql-connector-python
 
 #21. Instalacion de cloudstack con el repositorio agregado en el paso 12
 
-dnf -y install cloudstack-management
+f_instalacion cloudstack-management
 
 #los puertos 8080, 8250, 8443 y 9090 se deben encontrar abiertos y no firewalled por el server management, y no utilizados por algún otro proceso en este host
 
@@ -220,15 +220,15 @@ cloudstack-setup-databases cloud:password@localhost --deploy-as=root
 cloudstack-setup-management
 
 #25 Se establece una configuración para cloudstack
-/usr/share/cloudstack-common/scripts/storage/secondary/cloud-install-sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
+/usr/share/cloudstack-common/scripts/storage/secondary/cloud--sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
 
 #26 Para realizar la virtualización es necesario instalar kvm para ello será necesario
 
-dnf -y install cloudstack-agent
+f_instalacion cloudstack-agent
 
 #27. Instalacion de libvirt
 
-dnf -y install libvirt
+f_instalacion libvirt
 
 #28. Configuracion del archivo /etc/libvirt/qemu.conf, se agrega la siguiente linea
 
