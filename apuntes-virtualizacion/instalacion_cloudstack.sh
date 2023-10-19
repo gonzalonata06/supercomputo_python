@@ -35,6 +35,8 @@ f_instalacion(){
 	if [ $? -ne 0 ]
 	then
 		dnf -y install $1 $2
+	else
+  		echo "El paquete $1 ya esta instalado"
 	fi
 else
 	echo Sin conexion a internet para descargar paquete
