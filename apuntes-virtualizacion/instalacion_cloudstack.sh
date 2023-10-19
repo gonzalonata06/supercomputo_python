@@ -28,11 +28,11 @@ else
 fi
 
 f_instalacion(){
- ping -c1 8.8.8.8 &
- if [ $? -eq 0 ]
+ ping -c1 8.8.8.8 
+ if [ $? = '0' ]
  then
 	dnf list installed $1 
-	if [ $? -ne 0 ]
+	if [ $? != '0' ]
 	then
 		dnf -y install $1 $2
 	else
