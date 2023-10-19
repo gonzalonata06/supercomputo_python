@@ -42,7 +42,7 @@ fi
 }
 
 #Actualizacion de paquetes
-#dnf -y upgrade
+dnf -y upgrade
 #Instalacion de bridge utils y net-tools
 
 f_instalacion epel-release
