@@ -203,7 +203,7 @@ systemctl restart mysqld
 
 #20. Para instalar el conector de python con mysql usaremos
 f_instalacion python3-pip
-pip mysql-connector-python
+pip install mysql-connector-python
 
 #21. Instalacion de cloudstack con el repositorio agregado en el paso 12
 
