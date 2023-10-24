@@ -123,7 +123,7 @@ echo BRIDGE=cloudbr0 >> $r_red2
 
 subip_int=$( echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f1 -d.))
 echo $subip_int
-for  ((i=2;i<3;i++)){
+for  ((i=2;i<4;i++)){
 	subip_int="$subip_int.$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f$i -d.))"
 }
 
