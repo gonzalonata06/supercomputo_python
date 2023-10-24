@@ -38,19 +38,33 @@ else
 fi
 
 f_instalacion(){
- ping -c1 8.8.8.8 
+ ping -c1 8.8.8.8 > /dev/null 2&>1  
  if [ $? = '0' ]
  then
 	dnf list installed $1 
 	if [ $? != '0' ]
 	then
-		dnf -y install $1 $2
+		dnf -y install $1 $2 2>> err_ins_cloudstack.txt
+		if [ $? != '0' ]
+		then
+			echo "Error en $1 al momento de instalar, las lineas superiores a ésta muestran los errores"
+
+		fi
 	else
   		echo "El paquete $1 ya esta instalado"
 	fi
 else
 	echo Sin conexion a internet para descargar paquete
 fi
+}
+
+f_log(){
+
+	if [ $? != '0' ]
+	then
+		echo "Error en $1 $2 $3 al ejecutar, las lineas superiores a ésta muestran los errores" 2>> err_ins_cloudstack.txt
+	fi
+
 }
 
 #Actualizacion de paquetes
@@ -136,16 +150,21 @@ fi
 
 #5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
 
-systemctl disable NetworkManager
-systemctl stop NetworkManager
+systemctl disable NetworkManager 2>> err_ins_cloudstack.txt
+f_log systemctl disable NetworkManager 
+
+systemctl stop NetworkManager 2>> err_ins_cloudstack.txt
+f_log systemctl stop NetworkManager
 
 #6. Instalamos el demonio network-scripts
 f_instalacion network-scripts --enablerepo=devel
 
 #7. Activamos el demonio recien instalado y reiniciamos para cargar todos los cambios de configuracion
  
-systemctl enable network
-systemctl start network
+systemctl enable network 2>> err_ins_cloudstack.txt
+f_log systemctl enable network
+systemctl start network 2>> err_ins_cloudstack.txt
+f_log systemctl start network
 #reboot 
 #No parece conveniente reiniciar ante la ejecución de un script
 
@@ -167,7 +186,8 @@ echo $1 srvr1.cloud.priv >> /etc/hosts
 
 #10. Se reinicia el demonio network
 
-systemctl restart network
+systemctl restart network 2>> err_ins_cloudstack.txt
+f_log systemctl restart network
 
 #se verifica el estado de hostname
 
@@ -175,7 +195,8 @@ systemctl restart network
 
 #11. Configuramos SELinux, ejecutando en el shell
 
-setenforce 0
+setenforce 0 2>> err_ins_cloudstack.txt
+f_log setenforce 0 
 
 #cambiamos la configuracion del archivo /etc/selinux/config para que sea igual que lo siguiente:
 
@@ -211,20 +232,28 @@ echo Domain = cloud.priv >> /etc/idmapd.conf
 
 #15. Se desactiva el demonio del firewall
 
-systemctl stop firewalld
-systemctl disable firewalld
+systemctl stop firewalld 2>> err_ins_cloudstack.txt
+f_log systemctl stop firewalld
+systemctl disable firewalld 2>> err_ins_cloudstack.txt
+f_log systemctl disable firewalld
 
 #16. Se inicializan otros demonios necesarios
-systemctl enable rpcbind
-systemctl enable nfs-server
-systemctl start rpcbind
-systemctl start nfs-server
+systemctl enable rpcbind 2>> err_ins_cloudstack.txt
+f_log systemctl enable rpcbind
+systemctl enable nfs-server 2>> err_ins_cloudstack.txt
+f_log systemctl enable nfs-server
+systemctl start rpcbind 2>> err_ins_cloudstack.txt
+f_log systemctl start rpcbind
+systemctl start nfs-server 2>> err_ins_cloudstack.txt
+f_log systemctl start nfs-server
 
 #17. Instalación de wget y obtención del repositorio de mysql
 
 f_instalacion wget
-wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
-rpm -ivh mysql-community-release-el7-5.noarch.rpm
+wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm 2>> err_ins_cloudstack.txt
+f_log wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+rpm -ivh mysql-community-release-el7-5.noarch.rpm 2>> err_ins_cloudstack.txt 
+f_log rpm -ivh mysql-community-release-el7-5.noarch.rpm
 f_instalacion mysql-server
 
 #18. Modificar el archivo de configuracion de mysql en /etc/my.cnf añadiendo 
@@ -237,8 +266,10 @@ echo binlog-format = 'ROW' >> /etc/my.cnf
 
 #19. Se inicia el demonio de mysql
 
-systemctl enable mysqld
-systemctl restart mysqld
+systemctl enable mysqld 2>> err_ins_cloudstack.txt
+f_log systemctl enable mysqld
+systemctl restart mysqld 2>> err_ins_cloudstack.txt
+f_log systemctl restart mysqld
 
 #Puedes corroborar que se encuentra ejecutandose usando
 
@@ -246,7 +277,8 @@ systemctl restart mysqld
 
 #20. Para instalar el conector de python con mysql usaremos
 f_instalacion python3-pip
-pip install mysql-connector-python
+pip install mysql-connector-python 2>> err_ins_cloudstack.txt
+f_log pip install mysql-connector-python
 
 #21. Instalacion de cloudstack con el repositorio agregado en el paso 12
 
@@ -256,14 +288,17 @@ f_instalacion cloudstack-management
 
 #23. Se inicializa la base de datos
 
-cloudstack-setup-databases cloud:password@localhost --deploy-as=root
+cloudstack-setup-databases cloud:password@localhost --deploy-as=root 2>> err_ins_cloudstack.txt
+f_log cloudstack-setup-databases cloud:password@localhost --deploy-as=root
 
 #24. Se inicializa el gestor del servidor
 
-cloudstack-setup-management
+cloudstack-setup-management 2>> err_ins_cloudstack.txt
+f_log cloudstack-setup-management
 
 #25 Se establece una configuración para cloudstack
-/usr/share/cloudstack-common/scripts/storage/secondary/cloud--sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
+/usr/share/cloudstack-common/scripts/storage/secondary/cloud--sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F 2>> err_ins_cloudstack.txt
+f_log /usr/share/cloudstack-common/scripts/storage/secondary/cloud--sys-tmplt -m /export/secondary -u http://download.cloudstack.org/systemvm/4.18/systemvmtemplate-4.18.1-kvm.qcow2.bz2 -h kvm -F
 
 #26 Para realizar la virtualización es necesario instalar kvm para ello será necesario
 
@@ -286,8 +321,10 @@ echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
 echo mdns_adv = 0 >> /etc/libvirt/libvirtd.conf
 
 #29. Reiniciamos el demonio correspondiente a libvirtd y verificamos que éste se esté ejecutando
-systemctl restart libvirtd 
-systemctl status libvirtd
+systemctl restart libvirtd 2>> err_ins_cloudstack.txt
+f_log systemctl restart libvirtd 
+systemctl status libvirtd 2>> err_ins_cloudstack.txt
+f_log systemctl status libvirtd
 
 #30. Corroboramos qque kvm se encuentre corriendo con el siguiente comand, debería obtenerse algo como lo de abajo 
 
@@ -305,9 +342,12 @@ ss -tlpn | grep 8080
 #32. Verificamos que se esté utilizando la versión 11 de java
 
 alternatives --config java
-systemctl status cloudstack-management
-systemctl status mysqld
-systemctl status libvirtd
+systemctl status cloudstack-management 2>> err_ins_cloudstack.txt
+f_log systemctl status cloudstack-management
+systemctl status mysqld 2>> err_ins_cloudstack.txt
+f_log systemctl status mysqld
+systemctl status libvirtd 2>> err_ins_cloudstack.txt
+f_log systemctl status libvirtd
 
 #33. Abrimos el navegador y colocamos la direccion
 
