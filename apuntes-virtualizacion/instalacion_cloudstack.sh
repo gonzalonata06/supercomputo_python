@@ -69,7 +69,8 @@ f_log(){
 
 #Actualizacion de paquetes
 
-#dnf -y upgrade
+dnf -y upgrade 2>> err_ins_cloudstack.txt
+f_log dnf -y upgrade
 
 #Instalacion de bridge utils y net-tools
 
