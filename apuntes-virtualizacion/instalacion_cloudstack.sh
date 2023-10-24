@@ -147,7 +147,7 @@ echo $gateway
 if [ "$ip_int" != "$2" ]
 then 
 	echo "DEVICE=$interfaz_internet" > /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
-	echo "IPADRR=$ip_int" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
+	echo "IPADDR=$ip_int" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 	echo "NETMASK=255.255.255.0" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 	echo "GATEWAY=$gateway" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 fi
