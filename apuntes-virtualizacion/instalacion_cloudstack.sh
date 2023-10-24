@@ -54,7 +54,9 @@ fi
 }
 
 #Actualizacion de paquetes
-dnf -y upgrade
+
+#dnf -y upgrade
+
 #Instalacion de bridge utils y net-tools
 
 f_instalacion epel-release
@@ -72,18 +74,17 @@ echo IPV6INIT=no >> $r_red
 echo IPV6_AUTOCONF=no >> $r_red
 echo DELAY=5 >> $r_red
 
-gateway=""
+#gateway=""
 
-gateway="$(echo $1 | cut -f1 -d.)"
+#gateway="$(echo $1 | cut -f1 -d.)"
 
-for  ((i=2;i<4;i++)){
+#for  ((i=2;i<4;i++)){
 	gateway="$gateway.$(echo $1 | cut -f$i -d.)"
-}
-	gateway="$gateway.1"
+#}
+#	gateway="$gateway.1"
 
 echo IPADDR=$1 >> $r_red
-echo GATEWAY=$(echo $gateway) >> $r_red   #$(echo $1 | cut -f4 -d.) >> r_red
-
+#echo GATEWAY=$(echo $gateway) >> $r_red   
 echo NETMASK=255.255.255.0 >> $r_red
 echo DNS1=8.8.8.8 >> $r_red
 echo DNS2=8.8.4.4 >> $r_red
@@ -105,16 +106,32 @@ echo BRIDGE=cloudbr0 >> $r_red2
 
 #Creacion del archivo de configuracion para la interfaz que se conecta a internet
 
-interfaz_internet=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f5 -d" "))
-ip_int=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" "))
+subip_int=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f1 -d.))
 
-if [ "$ip_int" = "$2" ]
+for  ((i=2;i<3;i++)){
+	subip_int="$subip_int.$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f$i -d.))"
+}
+
+
+interfaz_internet=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f5 -d" "))
+ip_int=$(echo $(ip a l | grep -o "inet.*$subip_int.[0-9]\{1,3\}/" | tr -d "/" | cut -f2 -d" "))
+gateway=""
+
+gateway="$(echo $ip_int | cut -f1 -d.)"
+
+for  ((i=2;i<4;i++)){
+        gateway="$gateway.$(echo $ip_int | cut -f$i -d.)"
+}
+        gateway="$gateway.1"
+
+
+if [ "$ip_int" != "$2" ]
 then 
 	echo > /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 	echo >> "DEVICE=$interfaz_internet"
-	echo >> "BOOTPROTO=auto"	
 	echo >> "IPADRR=$ip_int"
 	echo >> "NETMASK=255.255.255.0"
+	echo >> "GATEWAY=$gateway"
 fi
 
 #5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
