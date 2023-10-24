@@ -121,15 +121,19 @@ echo BRIDGE=cloudbr0 >> $r_red2
 
 #Creacion del archivo de configuracion para la interfaz que se conecta a internet
 
-subip_int= echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f1 -d.)
-
+subip_int=$ echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f1 -d.))
+echo $subip_int
 for  ((i=2;i<3;i++)){
 	subip_int="$subip_int.$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" " | cut -f$i -d.))"
 }
 
+echo $subip_int
 
-interfaz_internet= echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f5 -d" ")
-ip_int= echo $(ip a l | grep -o "inet.*$subip_int.[0-9]\{1,3\}/" | tr -d "/" | cut -f2 -d" ")
+interfaz_internet=$( echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f5 -d" "))
+ip_int=$( echo $(ip a l | grep -o "inet.*$subip_int.[0-9]\{1,3\}/" | tr -d "/" | cut -f2 -d" "))
+echo $interfaz_internet
+echo $ip_int
+
 gateway=""
 
 gateway="$(echo $ip_int | cut -f1 -d.)"
@@ -138,7 +142,7 @@ for  ((i=2;i<4;i++)){
         gateway="$gateway.$(echo $ip_int | cut -f$i -d.)"
 }
         gateway="$gateway.1"
-
+echo $gateway
 
 if [ "$ip_int" != "$2" ]
 then 
