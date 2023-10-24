@@ -2,9 +2,19 @@
 
 # Para ejecutar este programa se necesitan dos argumentos
 
-#sudo ./instalacion_cloudstack.sh direccion_ip nombre_en_tarjeta_de_red
+#sudo ./instalacion_cloudstack.sh direccion_ip nombre_interfaz_de_red
 
 #!/bin/bash
+
+
+for arg in "$a" #en todos los argumentos que han entrado
+do
+    if [ "$arg" == "--help" ] || [ "$arg" == "-h" ] 
+    then
+        echo "Uso: sudo ./instalacion_cloudstack.sh direccion_ip nombre_interfaz_de_red"
+    fi
+done
+
 
 #Verificar que la ip e interfaz de red existan de verdad
 
@@ -92,6 +102,20 @@ echo NAME=$2 >> $r_red2
 echo DEVICE=$2 >> $r_red2
 echo ONBOOT=yes >> $r_red2
 echo BRIDGE=cloudbr0 >> $r_red2
+
+#Creacion del archivo de configuracion para la interfaz que se conecta a internet
+
+interfaz_internet=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f5 -d" "))
+ip_int=$(echo $(ip r l | grep -o "def.*dev.*[0-9].proto" | cut -f3 -d" "))
+
+if [ "$ip_int" = "$2" ]
+then 
+	echo > /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
+	echo >> "DEVICE=$interfaz_internet"
+	echo >> "BOOTPROTO=auto"	
+	echo >> "IPADRR=$ip_int"
+	echo >> "NETMASK=255.255.255.0"
+fi
 
 #5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
 
