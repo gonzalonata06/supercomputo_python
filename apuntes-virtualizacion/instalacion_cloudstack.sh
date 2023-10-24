@@ -38,7 +38,7 @@ else
 fi
 
 f_instalacion(){
- ping -c1 8.8.8.8 > /dev/null 2&>1  
+ ping -c1 8.8.8.8 > /dev/null 2>&1  
  if [ $? = '0' ]
  then
 	dnf list installed $1 
@@ -93,7 +93,7 @@ echo DELAY=5 >> $r_red
 #gateway="$(echo $1 | cut -f1 -d.)"
 
 #for  ((i=2;i<4;i++)){
-	gateway="$gateway.$(echo $1 | cut -f$i -d.)"
+	#gateway="$gateway.$(echo $1 | cut -f$i -d.)"
 #}
 #	gateway="$gateway.1"
 
@@ -141,11 +141,10 @@ for  ((i=2;i<4;i++)){
 
 if [ "$ip_int" != "$2" ]
 then 
-	echo > /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
-	echo >> "DEVICE=$interfaz_internet"
-	echo >> "IPADRR=$ip_int"
-	echo >> "NETMASK=255.255.255.0"
-	echo >> "GATEWAY=$gateway"
+	echo "DEVICE=$interfaz_internet" > /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
+	echo "IPADRR=$ip_int" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
+	echo "NETMASK=255.255.255.0" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
+	echo "GATEWAY=$gateway" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 fi
 
 #5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
