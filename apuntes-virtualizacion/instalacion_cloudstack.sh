@@ -148,7 +148,11 @@ then
 	echo "GATEWAY=$gateway" >> /etc/sysconfig/network-scripts/ifcfg-$interfaz_internet
 fi
 
-#5. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
+#5. Instalamos el demonio network-scripts
+f_instalacion network-scripts --enablerepo=devel
+
+
+#6. Desactivamos la inicializacion al prender la maquina del demonio  NetworkManager, y lo detenemos.   
 
 systemctl disable NetworkManager 2>> err_ins_cloudstack.txt
 f_log systemctl disable NetworkManager 
@@ -156,8 +160,6 @@ f_log systemctl disable NetworkManager
 systemctl stop NetworkManager 2>> err_ins_cloudstack.txt
 f_log systemctl stop NetworkManager
 
-#6. Instalamos el demonio network-scripts
-f_instalacion network-scripts --enablerepo=devel
 
 #7. Activamos el demonio recien instalado y reiniciamos para cargar todos los cambios de configuracion
  
