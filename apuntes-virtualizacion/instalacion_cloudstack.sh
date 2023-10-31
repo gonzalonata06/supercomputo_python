@@ -6,6 +6,17 @@
 
 #!/bin/bash
 
+#Para obtener ayuda del uso del script
+
+#if [ $(echo $(ps  -fea | grep -c  "$PPID.\{1,\}?")) = "2" ]
+#then
+#	echo Ejecutando . ./
+#	sleep 60
+#else
+#        echo Ejecutando ./
+#	sleep 60
+#	exit 1
+#fi
 
 for arg in "$a" #en todos los argumentos que han entrado
 do
@@ -24,8 +35,18 @@ then
 	
 else
 	echo IP y/o interfaz de red inválida
-	exit 1
+	if [ $(echo $(ps  -fea | grep -c  "$PPID.\{1,\}?")) = "2" ]
+		then
+        	echo Ejecutando . ./
+        	sleep 60
+	else
+        	echo Ejecutando ./
+        	exit 1
+	fi
+
 fi
+
+sleep 60
 
 #Verificar que se está instalando en un Rocky 9.2
 

@@ -1,0 +1,108 @@
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Failed to disable unit: Access denied
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Failed to disable unit: Access denied
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Error al cargar el complemento "config_manager": '*prog'
+KeyboardInterrupt: Terminado.
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Failed to disable unit: Access denied
+Failed to stop NetworkManager.service: Access denied
+See system logs and 'systemctl status NetworkManager.service' for details.
+Failed to enable unit: Access denied
+Failed to start network.service: Access denied
+See system logs and 'systemctl status network.service' for details.
+Failed to restart network.service: Access denied
+See system logs and 'systemctl status network.service' for details.
+setenforce:  security_setenforce() failed:  Permission denied
+Failed to stop firewalld.service: Access denied
+See system logs and 'systemctl status firewalld.service' for details.
+Failed to disable unit: Access denied
+Failed to enable unit: Access denied
+Failed to enable unit: Access denied
+Failed to start rpcbind.service: Access denied
+See system logs and 'systemctl status rpcbind.service' for details.
+Failed to start nfs-server.service: Access denied
+See system logs and 'systemctl status nfs-server.service' for details.
+--2023-10-31 09:32:35--  http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+Resolviendo repo.mysql.com (repo.mysql.com)... 23.197.82.218, 2806:1070:cefe:189::1d68, 2806:1070:cefe:186::1d68
+Conectando con repo.mysql.com (repo.mysql.com)[23.197.82.218]:80... conectado.
+Petición HTTP enviada, esperando respuesta... 200 OK
+Longitud: 6140 (6.0K) [application/x-redhat-package-manager]
+Grabando a: «mysql-community-release-el7-5.noarch.rpm»
+
+     0K .....                                                 100%  770M=0s
+
+2023-10-31 09:32:35 (770 MB/s) - «mysql-community-release-el7-5.noarch.rpm» guardado [6140/6140]
+
+error: no es posible crear el bloqueo transacción sobre /var/lib/rpm/.rpm.lock (Permiso denegado)
+Error al cargar el complemento "config_manager": '*prog'
+Error: Este comando debe ejecutarse con privilegios de superusuario (bajo el usuario root en la mayoría de los sistemas).
+Failed to enable unit: Access denied
+Failed to restart mysqld.service: Access denied
+See system logs and 'systemctl status mysqld.service' for details.
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/msgpack/__init__.py", line 14, in <module>
+    from ._cmsgpack import Packer, unpackb, Unpacker
+ModuleNotFoundError: No module named 'pip._vendor.msgpack._cmsgpack'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/bin/pip", line 24, in <module>
+    sys.exit(main())
+  File "/usr/lib/python3.9/site-packages/pip/_internal/cli/main.py", line 68, in main
+    command = create_command(cmd_name, isolated=("--isolated" in cmd_args))
+  File "/usr/lib/python3.9/site-packages/pip/_internal/commands/__init__.py", line 94, in create_command
+    module = importlib.import_module(module_path)
+  File "/usr/lib64/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/usr/lib/python3.9/site-packages/pip/_internal/commands/install.py", line 14, in <module>
+    from pip._internal.cli.req_command import (
+  File "/usr/lib/python3.9/site-packages/pip/_internal/cli/req_command.py", line 20, in <module>
+    from pip._internal.index.collector import LinkCollector
+  File "/usr/lib/python3.9/site-packages/pip/_internal/index/collector.py", line 35, in <module>
+    from pip._internal.network.session import PipSession
+  File "/usr/lib/python3.9/site-packages/pip/_internal/network/session.py", line 30, in <module>
+    from pip._vendor.cachecontrol import CacheControlAdapter
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/cachecontrol/__init__.py", line 9, in <module>
+    from .wrapper import CacheControl
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/cachecontrol/wrapper.py", line 1, in <module>
+    from .adapter import CacheControlAdapter
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/cachecontrol/adapter.py", line 7, in <module>
+    from .controller import CacheController
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/cachecontrol/controller.py", line 13, in <module>
+    from .serialize import Serializer
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/cachecontrol/serialize.py", line 6, in <module>
+    from pip._vendor import msgpack
+  File "/usr/lib/python3.9/site-packages/pip/_vendor/msgpack/__init__.py", line 16, in <module>
+    from .fallback import Packer, unpackb, Unpacker
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 846, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 941, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1040, in get_data
+KeyboardInterrupt
