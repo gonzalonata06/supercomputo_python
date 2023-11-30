@@ -18,11 +18,12 @@
 #	exit 1
 #fi
 
-for arg in "$a" #en todos los argumentos que han entrado
+for arg in "$*" #en todos los argumentos que han entrado
 do
     if [ "$arg" == "--help" ] || [ "$arg" == "-h" ] 
     then
         echo "Uso: sudo ./instalacion_cloudstack.sh direccion_ip nombre_interfaz_de_red"
+    	exit 0
     fi
 done
 
