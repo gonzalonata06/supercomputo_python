@@ -49,7 +49,6 @@ crear)
 	network=""
 
 	valores=$(dialog --ok-label "Crear" \
-	  --backtitle "Linux User Managment" \
 	  --title "Nueva instancia" \
 	  --form "Crear nueva instancia:" \
 					15 90 0 \
@@ -58,62 +57,86 @@ crear)
 	"VCPU's:"   3 1	"$vcpu"  	3 25 30 0 \
 	"Disk route:"  4 1   	"$disk" 	4 25 60 0 \
 	"Iso route:"    5 1	"$cdrom" 	5 25 60 0 \
-	"Network (bridge:virbr0):"  6 1   	"$network" 	6 25 30 0 \
-	2>&1 1>$(tty))
-	echo $valores
-	sleep 10
-	virt-install \
-                --name $name \
-                --ram $ram \
-                --vcpus $vcpu \
-                --disk $disk  \
-                --graphics vnc,listen=0.0.0.0 --noautoconsole \
-                --cdrom $cdrom \
-                --network $network 2>&1 | dialog --progressbox 0 0
+        2>&1 1>$(tty))
+
+	#"Network (bridge:virbr0):"  6 1   	"$network" 	6 25 30 0 \
+#	2>&1 1>$(tty))        2>&1 1>$(tty))
+	valores_array=($valores)
+	#echo $valores
+	#sleep 10
+	virt-install --name ${valores_array[0]} --ram ${valores_array[1]} --vcpus ${valores_array[2]} --disk ${valores_array[3]} --graphics vnc,listen=0.0.0.0 --noautoconsole --cdrom ${valores_array[4]}
+       	#--network ${valores[5]}
+	
+	unset valores_array
+	sleep 10 
+			
+	#2>&1 | dialog --progressbox 0 0
 		
 ;;
 gestionar)
 	contador=1
-	for i in $(sudo virsh list --all | sed '1,2d' | tr -s " " ":")
+	for i in $(virsh list --all | sed '1,2d' | sed 's/-//' | sed 's/\ [0-9]\ //' | tr -s [:space:] | sed 's/apagado//' |  sed 's/ejecutando//' | sed 's/en pausa//')
 	do
-		arreglo=( $i ${arreglo[@]})
-		arreglo=( $contador ${arreglo[@]})
+		arreglo=( ${arreglo[@]} $contador)
+		arreglo=( ${arreglo[@]} $i)
+		
+		#echo ${arreglo[@]}
+		#sleep 5
+
 		let contador++
 	done
-	#gestionar=$(dialog --menu "Elija la instancia a gestionar" 0 0 0 todas "Listar todas las intancias" corriendo "Listar instancias en ejecucion" autoinicio "Listar instancias con autoinicio" 2>&1 1>$(tty))
-	gestionar=$(dialog --menu "Elija la instancia a gestionar" 40 40 35 ${arreglo[@]} 2>&1 1>$(tty))
-	proceso=$(dialog --menu "Eliga la operación a realizar" 40 40 35 1 Encender 2 Apagar 3 Reiniciar 4 Detener 5 Reanudar 6 Activar autoencendido 7 Desactivar autoencendido 8 Borrar 2>&1 1>$(tty))	
+	gestionar=$(dialog --menu "Elija la instancia a gestionar" 40 70 35 ${arreglo[@]} 2>&1 1>$(tty))
+	#echo $gestionar
+	#echo ${arreglo[$gestionar*2 - 1]}
+        #echo ${arreglo[@]}
+
+	#sleep  5
+	proceso=$(dialog --menu "Eliga la operación a realizar" 40 70 35 1 Encender 2 Apagar 3 "forzar apagado"  4 "Reiniciar" 5 "Forzar reinicio" 6 Detener 7 Reanudar 8 "Activar autoencendido" 9 "Desactivar autoencendido" "10" Borrar 2>&1 1>$(tty))	
+	echo $proceso
+
+	#sleep 5
 
 	case $proceso in
 	1)
-		virsh start ${arreglo[$gestionar + 1]}
+		#echo ${arreglo[$gestionar + 1]}
+		#sleep 5
+		virsh start ${arreglo[$gestionar*2 - 1]}
 	;;
 	2)
 
-		virsh shutdown ${arreglo[$gestionar + 1]}
+		virsh shutdown ${arreglo[$gestionar*2 - 1]}
 	;;
 	3)
-		virsh restart ${arreglo[$gestionar + 1]}
+		virsh destroy ${arreglo[$gestionar*2 - 1]}
 	;;
 	4)
-		virsh suspend ${arreglo[$gestionar + 1]}
+		virsh restart ${arreglo[$gestionar*2 - 1]}
 	;;
 	5)
-		virsh resume ${arreglo[$gestionar + 1]}
+		virsh reset ${arreglo[$gestionar*2 - 1]}
+
 	;;
+
 	6)
-		virsh autostart ${arreglo[$gestionar + 1]}
+		virsh suspend ${arreglo[$gestionar*2 - 1]}
 	;;
 	7)
-		virsh autostart --disable ${arreglo[$gestionar + 1]}
+		virsh resume ${arreglo[$gestionar*2 - 1]}
 	;;
 	8)
-		virsh  virsh destroy ${arreglo[$gestionar + 1]}
-                virsh undefine ${arreglo[$gestionar + 1]} --remove-all-storage
+		virsh autostart ${arreglo[$gestionar*2 - 1]}
+	;;
+	9)
+		virsh autostart --disable ${arreglo[$gestionar*2 - 1]}
+	;;
+	10)
+		virsh  virsh destroy ${arreglo[$gestionar*2 - 1]}
+                virsh undefine ${arreglo[$gestionar*2 - 1]} --remove-all-storage
 	;;
 	esac
-	
-
+	unset arreglo
+	unset gestionar
+	unset proceso
 ;;
 salir)
 	clear
