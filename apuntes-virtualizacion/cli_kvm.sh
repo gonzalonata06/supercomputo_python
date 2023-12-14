@@ -23,19 +23,47 @@ listar)
 	
 	case $listar in 
 	todas) 
-		virsh list --all  2>&1 | dialog --progressbox 50 60		
-		sleep 8
-
+		virsh list --all  2>&1 | dialog --progressbox "Estado de las instancias" 50 60
+		while true;
+		do
+			sleep 1
+			read input
+			if [ $input != '\n'  ]
+			then
+				continue
+			else
+				break
+			fi
+		done
 	;;
-	corriendo)
-	
+	corriendo)	
 		virsh list  2>&1 | dialog --progressbox 50 60
-		sleep 8
+		while true;
+                do
+                        sleep 1
+                        read input
+                        if [ $input != '\n'  ]
+                        then
+                                continue
+                        else
+                                break
+                        fi
+                done
 	;;
 	autoinicio)
 		
 		virsh list --autostart  2>&1 | dialog --progressbox 50 60
-		seep 8
+		while true;
+                do
+                        sleep 1
+                        read input
+                        if [ $input != '\n'  ]
+                        then
+                                continue
+                        else
+                                break
+                        fi
+                done
 	;;
 	esac
 	
@@ -61,15 +89,28 @@ crear)
 
 	#"Network (bridge:virbr0):"  6 1   	"$network" 	6 25 30 0 \
 #	2>&1 1>$(tty))        2>&1 1>$(tty))
-	valores_array=($valores)
-	#echo $valores
-	#sleep 10
-	virt-install --name ${valores_array[0]} --ram ${valores_array[1]} --vcpus ${valores_array[2]} --disk ${valores_array[3]} --graphics vnc,listen=0.0.0.0 --noautoconsole --cdrom ${valores_array[4]}
-       	#--network ${valores[5]}
+	if [ $valores != '' ]
+	then
+		valores_array=($valores)
+		echo $valores
+		virt-install --name ${valores_array[0]} --ram ${valores_array[1]} --vcpus ${valores_array[2]} --disk ${valores_array[3]} --graphics vnc,listen=0.0.0.0 --noautoconsole --cdrom ${valores_array[4]} 2>&1 | dialog --progressbox 50 90
+	
+	#--network ${valores[5]}
 	
 	unset valores_array
-	sleep 10 
-			
+        
+	while true;
+        do
+        	sleep 1
+                read input
+                if [ $input != '\n'  ]
+                then
+        	        continue
+                else
+                	break
+                fi
+        done
+	fi
 	#2>&1 | dialog --progressbox 0 0
 		
 ;;
@@ -91,7 +132,9 @@ gestionar)
         #echo ${arreglo[@]}
 
 	#sleep  5
-	proceso=$(dialog --menu "Eliga la operación a realizar" 40 70 35 1 Encender 2 Apagar 3 "forzar apagado"  4 "Reiniciar" 5 "Forzar reinicio" 6 Detener 7 Reanudar 8 "Activar autoencendido" 9 "Desactivar autoencendido" "10" Borrar 2>&1 1>$(tty))	
+	if [ $gestionar != '' ]
+	then
+	proceso=$(dialog --menu "Eliga la operación a realizar" 40 70 35 1 Encender 2 Apagar 3 "forzar apagado"  4 "Reiniciar" 5 "Forzar reinicio" 6 Detener 7 Reanudar 8 "Activar autoencendido" 9 "Desactivar autoencendido" '10' Borrar 2>&1 1>$(tty))	
 	echo $proceso
 
 	#sleep 5
@@ -134,13 +177,20 @@ gestionar)
                 virsh undefine ${arreglo[$gestionar*2 - 1]} --remove-all-storage
 	;;
 	esac
+	#unset arreglo
+	#unset gestionar
+	#unset proceso
+	fi
 	unset arreglo
-	unset gestionar
-	unset proceso
+        unset gestionar
+        unset proceso
+
 ;;
 salir)
 	clear
 	exit 0
+
+;;
 esac
 
 
