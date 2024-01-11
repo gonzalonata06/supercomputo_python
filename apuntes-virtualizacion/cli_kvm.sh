@@ -89,12 +89,36 @@ crear)
 
 	#"Network (bridge:virbr0):"  6 1   	"$network" 	6 25 30 0 \
 #	2>&1 1>$(tty))        2>&1 1>$(tty))
-	if [ $valores != '' ]
+
+
+	if [ ${#valores} -ge 1 ]
 	then
+		puerto=5900
+		validacion=$(ss -tlpn | grep -c $puerto)	
+		while true;
+		do	
+			if [ $validacion = '1' ]
+			then
+				puerto=$(($puerto+1))
+				validacion=$(ss -tlpn | grep -c $puerto)
+			else
+				break
+			fi
+		done
+		
 		valores_array=($valores)
-		echo $valores
 		virt-install --name ${valores_array[0]} --ram ${valores_array[1]} --vcpus ${valores_array[2]} --disk ${valores_array[3]} --graphics vnc,listen=0.0.0.0 --noautoconsole --cdrom ${valores_array[4]} 2>&1 | dialog --progressbox 50 90
-	
+		# sudo   virt-install --name demo --ram 2048 --disk path=/var/lib/libvirt/images/demo.img,size=10 --graphics vnc,listen=0.0.0.0 --noautoconsole --cdrom /home/gonzalo/Descargas/Rocky-9.3-x86_64-minimal.iso
+		
+		#sleep 3
+		#echo $?
+		#sleep 5
+
+		if [ $? = '0' ]
+		then
+			dialog --msgbox "Conectate a la virtual recien creada en el puerto $puerto" 0 0
+		fi
+
 	#--network ${valores[5]}
 	
 	unset valores_array
@@ -103,7 +127,7 @@ crear)
         do
         	sleep 1
                 read input
-                if [ $input != '\n'  ]
+                if [ $input != '\n' ]
                 then
         	        continue
                 else
